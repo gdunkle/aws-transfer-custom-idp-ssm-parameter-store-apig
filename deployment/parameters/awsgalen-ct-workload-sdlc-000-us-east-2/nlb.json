@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "Name",
+    "ParameterValue": "tf-awgalen-com"
+  },
+  {
+    "ParameterKey": "VpcId",
+    "ParameterValue": "vpc-07934af3ccab14b4e"
+  },
+  {
+    "ParameterKey": "PublicSubnet1Id",
+    "ParameterValue": "subnet-02d9879c3f042058f"
+  },
+  {
+    "ParameterKey": "PublicSubnet2Id",
+    "ParameterValue": "subnet-02aacea96f833eca6"
+  },
+  {
+    "ParameterKey": "TransferEndpointIpAddress01",
+    "ParameterValue": "10.165.2.148"
+  },
+  {
+    "ParameterKey": "TransferEndpointIpAddress02",
+    "ParameterValue": "10.165.4.147"
+  }
+]

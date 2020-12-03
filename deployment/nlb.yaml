@@ -1,0 +1,396 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Sets up an NLB server to fron a SFTP/FTP Transfer Family server
+Parameters:
+  Name:
+    Type: String
+    Description: Name of the components
+    MaxLength: 16
+  VpcId:
+    Type: String
+    Description: The vpc to deploy the transfer family server into
+  PublicSubnet1Id:
+    Type: String
+    Description: Id of public subnet 01
+  PublicSubnet2Id:
+    Type: String
+    Description: Id of public subnet 02
+  TransferEndpointIpAddress01:
+    Type: String
+    Description: IP address of the transfer endpoint in subnet 1
+  TransferEndpointIpAddress02:
+    Type: String
+    Description: IP address of the transfer endpoint in subnet 2
+Mappings:
+
+  MetricsMap:
+    Send-Data:
+      SendAnonymousData: "Yes" # change to 'No' if needed
+
+  SourceCode:
+    General:
+      S3Bucket: %%BUCKET_NAME%%
+      KeyPrefix: "%%SOLUTION_NAME%%/%%VERSION%%"
+
+Resources:
+  NetworkLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      IpAddressType: ipv4
+      Name: !Sub "${Name}-NLB"
+      Scheme: internet-facing
+      Subnets:
+        - !Ref PublicSubnet1Id
+        - !Ref PublicSubnet2Id
+      Type: network
+  FtpListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref Ftp21TargetGroup
+      LoadBalancerArn: !Ref NetworkLoadBalancer
+      Port: 21
+      Protocol: TCP
+  SftpListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref Sftp22TargetGroup
+      LoadBalancerArn: !Ref NetworkLoadBalancer
+      Port: 22
+      Protocol: TCP
+  Ftp8192Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref Ftp8192TargetGroup
+      LoadBalancerArn: !Ref NetworkLoadBalancer
+      Port: 8192
+      Protocol: TCP
+
+  Ftp8193Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref Ftp8193TargetGroup
+      LoadBalancerArn: !Ref NetworkLoadBalancer
+      Port: 8193
+      Protocol: TCP
+
+  Ftp8194Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref Ftp8194TargetGroup
+      LoadBalancerArn: !Ref NetworkLoadBalancer
+      Port: 8194
+      Protocol: TCP
+
+  Ftp8195Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref Ftp8195TargetGroup
+      LoadBalancerArn: !Ref NetworkLoadBalancer
+      Port: 8195
+      Protocol: TCP
+
+  Ftp8196Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref Ftp8196TargetGroup
+      LoadBalancerArn: !Ref NetworkLoadBalancer
+      Port: 8196
+      Protocol: TCP
+
+  Ftp8197Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref Ftp8197TargetGroup
+      LoadBalancerArn: !Ref NetworkLoadBalancer
+      Port: 8197
+      Protocol: TCP
+
+  Ftp8198Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref Ftp8198TargetGroup
+      LoadBalancerArn: !Ref NetworkLoadBalancer
+      Port: 8198
+      Protocol: TCP
+
+  Ftp8199Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref Ftp8199TargetGroup
+      LoadBalancerArn: !Ref NetworkLoadBalancer
+      Port: 8199
+      Protocol: TCP
+
+  Ftp8200Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          ForwardConfig:
+            TargetGroups:
+              - TargetGroupArn: !Ref Ftp8200TargetGroup
+      LoadBalancerArn: !Ref NetworkLoadBalancer
+      Port: 8200
+      Protocol: TCP
+
+
+  Ftp21TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPort: 21
+      HealthCheckProtocol: TCP
+
+      HealthyThresholdCount: 3
+      Name: FTP-TG-21
+      Port: 21
+      Protocol: TCP
+      Targets:
+        - Id: !Ref TransferEndpointIpAddress01
+          Port: 21
+        - Id: !Ref TransferEndpointIpAddress02
+          Port: 21
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+  Ftp8192TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPort: 21
+      HealthCheckProtocol: TCP
+
+      HealthyThresholdCount: 3
+      Name: FTP-TG-8192
+      Port: 8192
+      Protocol: TCP
+      Targets:
+        - Id: !Ref TransferEndpointIpAddress01
+          Port: 8192
+        - Id: !Ref TransferEndpointIpAddress02
+          Port: 8192
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+  Ftp8193TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPort: 21
+      HealthCheckProtocol: TCP
+
+      HealthyThresholdCount: 3
+      Name: FTP-TG-8193
+      Port: 8193
+      Protocol: TCP
+      Targets:
+        - Id: !Ref TransferEndpointIpAddress01
+          Port: 8193
+        - Id: !Ref TransferEndpointIpAddress02
+          Port: 8193
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+  Ftp8194TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPort: 21
+      HealthCheckProtocol: TCP
+
+      HealthyThresholdCount: 3
+      Name: FTP-TG-8194
+      Port: 8194
+      Protocol: TCP
+      Targets:
+        - Id: !Ref TransferEndpointIpAddress01
+          Port: 8194
+        - Id: !Ref TransferEndpointIpAddress02
+          Port: 8194
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+  Ftp8195TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPort: 21
+      HealthCheckProtocol: TCP
+
+      HealthyThresholdCount: 3
+      Name: FTP-TG-8195
+      Port: 8195
+      Protocol: TCP
+      Targets:
+        - Id: !Ref TransferEndpointIpAddress01
+          Port: 8195
+        - Id: !Ref TransferEndpointIpAddress02
+          Port: 8195
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+  Ftp8196TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPort: 21
+      HealthCheckProtocol: TCP
+
+      HealthyThresholdCount: 3
+      Name: FTP-TG-8196
+      Port: 8196
+      Protocol: TCP
+      Targets:
+        - Id: !Ref TransferEndpointIpAddress01
+          Port: 8196
+        - Id: !Ref TransferEndpointIpAddress02
+          Port: 8196
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+  Ftp8197TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPort: 21
+      HealthCheckProtocol: TCP
+
+      HealthyThresholdCount: 3
+      Name: FTP-TG-8197
+      Port: 8197
+      Protocol: TCP
+      Targets:
+        - Id: !Ref TransferEndpointIpAddress01
+          Port: 8197
+        - Id: !Ref TransferEndpointIpAddress02
+          Port: 8197
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+  Ftp8198TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPort: 21
+      HealthCheckProtocol: TCP
+
+      HealthyThresholdCount: 3
+      Name: FTP-TG-8198
+      Port: 8198
+      Protocol: TCP
+      Targets:
+        - Id: !Ref TransferEndpointIpAddress01
+          Port: 8198
+        - Id: !Ref TransferEndpointIpAddress02
+          Port: 8198
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+  Ftp8199TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPort: 21
+      HealthCheckProtocol: TCP
+
+      HealthyThresholdCount: 3
+      Name: FTP-TG-8199
+      Port: 8199
+      Protocol: TCP
+      Targets:
+        - Id: !Ref TransferEndpointIpAddress01
+          Port: 8199
+        - Id: !Ref TransferEndpointIpAddress02
+          Port: 8199
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+  Ftp8200TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPort: 21
+      HealthCheckProtocol: TCP
+
+      HealthyThresholdCount: 3
+      Name: FTP-TG-8200
+      Port: 8200
+      Protocol: TCP
+      Targets:
+        - Id: !Ref TransferEndpointIpAddress01
+          Port: 8200
+        - Id: !Ref TransferEndpointIpAddress02
+          Port: 8200
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+  Sftp22TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPort: 22
+      HealthCheckProtocol: TCP
+      HealthyThresholdCount: 3
+      Name: FTP-TG-22
+      Port: 22
+      Protocol: TCP
+      Targets:
+        - Id: !Ref TransferEndpointIpAddress01
+          Port: 22
+        - Id: !Ref TransferEndpointIpAddress02
+          Port: 22
+      TargetType: ip
+      UnhealthyThresholdCount: 3
+      VpcId: !Ref VpcId
+
+

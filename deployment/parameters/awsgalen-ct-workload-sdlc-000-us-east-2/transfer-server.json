@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "Name",
+    "ParameterValue": "tf-awgalen-com"
+  },
+  {
+    "ParameterKey": "VpcId",
+    "ParameterValue": "vpc-07934af3ccab14b4e"
+  },
+  {
+  "ParameterKey": "VpcCidr",
+  "ParameterValue": "10.165.0.0/20"
+  },
+  {
+    "ParameterKey": "Subnet1Id",
+    "ParameterValue": "subnet-0d0f695df99c11d7e"
+  },
+  {
+    "ParameterKey": "Subnet2Id",
+    "ParameterValue": "subnet-0ea442a34acb3f730"
+  }
+]

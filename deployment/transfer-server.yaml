@@ -1,11 +1,23 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: A basic template for creating a Lambda-backed API Gateway for use as
-  a custom identity provider in AWS Transfer. It authenticates against an
-  entry in AWS Secrets Manager of the format SFTP/username. Additionaly, the secret
-  must hold the key-value pairs for all user properties returned to AWS Transfer.
-  You can modify the Lambda function code to do something different after deployment.
+Description: Setup a transfer family server fro sftp/ftp inside a vpc.
 Parameters:
+  Name:
+    Type: String
+    Description: Name of the components
+    MaxLength: 16
+  VpcId:
+    Type: String
+    Description: The vpc to deploy the transfer family server into
+  VpcCidr:
+    Type: String
+    Description: The CIDR range of the VPC specified in VpcID. Used to narrow security group ingress.
+  Subnet1Id:
+    Type: String
+    Description: Id of subnet 01
+  Subnet2Id:
+    Type: String
+    Description: Id of subnet 01
   CreateServer:
     AllowedValues:
       - 'true'
@@ -46,11 +58,43 @@ Mappings:
       KeyPrefix: "%%SOLUTION_NAME%%/%%VERSION%%"
 
 Resources:
+
+  TransferServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub "Security group for ${Name}"
+      SecurityGroupEgress:
+        - FromPort: -1
+          ToPort: -1
+          IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        - FromPort: 21
+          ToPort: 21
+          IpProtocol: tcp
+          CidrIp: !Ref VpcCidr
+        - FromPort: 22
+          ToPort: 22
+          IpProtocol: tcp
+          CidrIp: !Ref VpcCidr
+        - FromPort: 8192
+          ToPort: 8200
+          IpProtocol: tcp
+          CidrIp: !Ref VpcCidr
+      VpcId: !Ref VpcId
+
   TransferServer:
     Type: AWS::Transfer::Server
     Condition: CreateServer
     Properties:
-      EndpointType: PUBLIC
+      EndpointType: VPC
+      EndpointDetails:
+        SecurityGroupIds:
+          - !Ref TransferServerSecurityGroup
+        SubnetIds:
+          - !Ref Subnet1Id
+          - !Ref Subnet2Id
+        VpcId: !Ref VpcId
       IdentityProviderDetails:
         InvocationRole:
           !GetAtt TransferIdentityProviderRole.Arn
@@ -66,6 +110,12 @@ Resources:
       IdentityProviderType: API_GATEWAY
       LoggingRole:
         !GetAtt CloudWatchLoggingRole.Arn
+      Protocols:
+        - SFTP
+        - FTP
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${Name}-TransferServer"
   CloudWatchLoggingRole:
     Description: IAM role used by Transfer  to log API requests to CloudWatch
     Type: AWS::IAM::Role
@@ -362,6 +412,8 @@ Resources:
 
 
 Outputs:
+  TransferServerSecurityGroup:
+    Value: !Ref TransferServerSecurityGroup
   ServerId:
     Value:
       !GetAtt TransferServer.ServerId
